@@ -1,0 +1,674 @@
+<div id="content" style="margin-top:5px">
+
+# Oracle Integration - ERP Cloud Events Lab
+
+![Oracle Documentation](img/header2.png)
+
+<div class="w1024" style="clear:both; position:relative; margin-top:30px;">
+
+<div id="shownav" title="Show Navigation" tabindex="0"><span class="fa fa-list"></span></div>
+
+<div id="sidebar">
+
+<div class="left-nav-tut">
+
+<div id="hidenavw" title="Hide Navigation" tabindex="0"><span class="fa fa-close"></span></div>
+
+</div>
+
+</div>
+
+<div id="bookContainer">
+
+<article>
+
+<section>
+
+## Background
+
+Oracle Integration provides native connectivity to Oracle and non-Oracle Software as a Service (SaaS) and On-premises applications, such as Oracle ERP Cloud, Oracle Service Cloud, Oracle HCM Cloud, Salesforce.com, Workday, EBS, SAP, NetSuite and so on. Oracle Integration adapters simplify best practice connectivity to these applications by handling many of the underlying technical complexities often encountererd when integrating applications.
+
+</section>
+
+* * *
+
+<section>
+
+## Use Case
+
+This use case explores the use of Oracle Integration to subscribe to Oracle ERP Cloud Events and push the relevant event information to downstream systems. As part of the lab you will build the following use case scenario:
+
+*   You create and activate an integration that subscribes to an ERP Cloud Purchase Order (PO) event.
+*   You then create a PO in ERP Cloud and a PO event is triggered.
+*   Your integration receives the PO event and pushes the data into a Visual Builder Web App.
+
+The following diagram shows the runtime interaction between the systems involved in this use case:
+
+![](img/screenshots/ERP/Purchase-Order-Real-Time-Synchronization-Simple.png)
+
+</section>
+
+* * *
+
+<section>
+
+## Before You Begin
+
+Some steps in this tutorial have a ![Copy to Clipboard](img/copy-to-clipboard.png) icon next to them. Click this icon to copy the snippet of text to your clipboard and then paste where needed.
+
+Your instructor will provide you the information you need to access the environments used in this lab.
+
+* * *
+
+For this lab we will provide you the following:
+
+*   Oracle Integration
+*   ERP Cloud
+
+* * *
+
+### Get Your Oracle Integration (OIC) Environment
+
+Select your OIC Environment and enter your User Number to get the information needed to access Oracle Integration.
+
+Select your **OIC environment**: <a name="oicEnvironment"></a>
+
+<label><a name="userNumber">**User Number**</a>: <input data-bind="value: user_number" type="text" placeholder="User Number"></label> <button>OK</button>
+
+*   **OIC URL**:
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:initial' : 'display:none'}">
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment()? selectedOICEnvironment().url : '' }"><span></span></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment()? selectedOICEnvironment().url : '' }"></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment()? selectedOICEnvironment().url : '' }"></a></div>
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your OIC Environment to get your OIC URL.](#oicEnvironment)
+
+    </div>
+
+*   **OIC User Name**:
+
+    <div data-bind="attr: {style: selectedOICEnvironment() &amp;&amp; user_number() ? 'display:initial' : 'display:none'}">
+
+    `<span></span>`
+
+    </div>
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your OIC Environment to get your OIC Username.](#oicEnvironment)
+
+    </div>
+
+    <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+    [Enter your User Number to get your OIC Username.](#userNumber)
+
+    </div>
+
+*   **OIC Password**: Your password will be provided by the instructor.
+
+* * *
+
+### Get Your ERP Cloud Environment
+
+Select your ERP Cloud Purchasing environment to get the information needed to access Oracle ERP Cloud.
+
+**ERP Cloud Environment**: <a name="erpEnvironment"></a>
+
+*   **ERP Cloud URL**:
+
+    <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:initial' : 'display:none'}">
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedAppEnvironment() ? selectedAppEnvironment().url : '' }"><span></span></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedAppEnvironment() ? selectedAppEnvironment().url : '' }"></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedAppEnvironment() ? selectedAppEnvironment().url : '' }"></a></div>
+
+    <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your ERP Cloud environment to get your ERP Cloud URL.](#erpEnvironment)
+
+    </div>
+
+*   **ERP Cloud User Name**:
+
+    <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:initial' : 'display:none'}">
+
+    `<span></span>`
+
+    </div>
+
+    <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your ERP Cloud environment to get your ERP Cloud Username.](#erpEnvironment)
+
+    </div>
+
+*   **ERP Cloud Password**: Your password will be provided by the instructor.
+
+</section>
+
+* * *
+
+<section>
+
+## Sign In
+
+1.  Open your Oracle Integration instance.
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:initial' : 'display:none'}">
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment() ? selectedOICEnvironment().url : '' }"><span></span></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment() ? selectedOICEnvironment().url : '' }"></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment() ? selectedOICEnvironment().url : '' }"></a></div>
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your OIC Environment to get your OIC URL.](#oicEnvironment)
+
+    </div>
+
+2.  Enter your user name and password.
+
+    <div data-bind="attr: {style: selectedOICEnvironment() &amp;&amp; user_number() ? 'display:initial' : 'display:none'}">
+
+    `<span></span>`
+
+    </div>
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your OIC Environment to get your OIC Username.](#oicEnvironment)
+
+    </div>
+
+    <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+    [Enter your User Number to get your OIC Username.](#userNumber)
+
+    </div>
+
+    Your password will be provided by the instructor.
+3.  Click **Sign In**.
+
+    The **Home** page appears.
+
+    You are now logged in and ready to use Oracle Integration.
+
+    ![](img/screenshots/integration/home-page.png)
+
+</section>
+
+* * *
+
+<section>
+
+## Create the PO Event Integration
+
+1.  On the **Home** page, click **Integrations**, and then click **Integrations**.
+2.  On the **Integrations** page, click **Create**.
+3.  In the **Select Integration Style** dialog, select **App Driven Orchestration**.
+4.  Click **Select**.
+5.  In the **Create New Integration** dialog, configure the integration:
+    1.  **What do you want to call your integration?**
+
+        <div data-bind="attr: {style: user_number() ? 'display:initial' : 'display:none'}">
+
+        Enter `<span>ERP Cloud PO Event</span>`
+
+        </div>
+
+        <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+        [Enter your User Number to specify your unique integration name.](#userNumber)
+
+        </div>
+
+    2.  In the **What does this integration do?** field, enter:
+
+        `<span>This integration shows how to use the Oracle Integration ERP Cloud adapter to subscribe to ERP Cloud business events.</span>`
+
+6.  Click **Create**.
+
+</section>
+
+* * *
+
+<section>
+
+## Create the ERP Cloud PO Event Trigger
+
+1.  Hover over **START** and click ![Add icon](img/add.png).
+2.  Begin typing `<span>ERP Cloud</span>` in the **Search** field to find the connection to your ERP Cloud environment.
+3.  Select the connection named `<span>ERP Cloud</span>`.
+
+    The **Configure Oracle ERP Cloud Endpoint** wizard appears.
+
+4.  Name your endpoint `<span>POEvent</span>`.
+5.  In the **What does this endpoint do?** field, enter:
+
+    `<span>This endpoint subscribes to the ERP Cloud Purchase Order business event.</span>`
+
+6.  Click **Next**.
+7.  On the **Request** page, configure the request properties:
+    1.  From the **Define the purpose of this trigger** options, select **Receive Business Events raised within ERP Cloud**.
+    2.  In the **Business Event For Subscription** field, begine typing `<span>Purchase Order Event</span>`.
+    3.  Select **Purchase Order Event**.
+
+    4.  In the **Filter Expr for Purchase Order Event** field, enter the following expression:
+
+        <div data-bind="attr: {style: user_number() ? 'display:initial' : 'display:none'}">
+
+            <xpathExpr xmlns:ns0="http://xmlns.oracle.com/apps/prc/po/editDocument/purchaseOrderServiceV2/" xmlns:ns2="http://xmlns.oracle.com/apps/prc/po/editDocument/purchaseOrderServiceV2/types/">$eventPayload/ns2:result/ns0:Value/ns0:PurchaseOrderLine/ns0:ItemDescription="Lan Cable "</xpathExpr>
+
+        </div>
+
+        <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+        [Enter your User Number to get your customized filter expression.](#userNumber)
+
+        </div>
+
+    5.  Click **Next**.
+8.  On the **Response** page, from the **Response Type** options, select **None**.
+9.  Click **Next**.
+
+    A summary of the properties you configured appears.
+
+10.  Review the summary and click **Done**.
+11.  On the **Integration** canvas, from the **Layout** list, select **Horizontal**.
+
+    ![](img/screenshots/integration/horizontal-layout.png)
+12.  Click **Save** to save the integration.
+
+</section>
+
+* * *
+
+<section>
+
+## Create the Create Purchase Order Activity
+
+1.  Hover over the outgoing arrow for the **POEvent** activity and click ![Add icon](img/add.png).
+2.  In the **Search** field, begin typing `<span>Visual Builder</span>` to find your connection.
+3.  Select the connection named `<span>Visual Builder</span>`.
+
+    The **Configure REST Endpoint** wizard appears.
+
+4.  In the **Basic Info** page, configure the endpoint:
+
+    1.  Name your endpoint `<span>CreatePO</span>`.
+    2.  In the **What does this endpoint do?** field, enter:
+
+        `<span>This endpoint creates a purchase order record in a Visual Builder application.</span>`
+
+    3.  In the **relative resource URI**, enter:
+
+        `<span>/ic/builder/design/PurchaseOrders/1.0/resources/data/PO</span>`
+
+        This is the relative URI to a Visual Builder application API. The Visual Builder connection specifies the base URL to your OIC environment which combined with relative URI defines the complete API endpoint.
+
+    4.  In the **action to perform on the endpoint** field, select **POST**.
+    5.  In the **options that you want to configure** section, select:
+
+        *   **Configure a request payload for this endpoint**
+        *   **Configure this endpoint to receive the response**
+5.  Click **Next**.
+6.  On the **Request** page, configure the following values:
+
+    1.  From the **Select the request payload format** list, select **JSON Sample**.
+
+    2.  Click the **<<<inline>>>** link.
+    3.  Enter the following JSON sample:
+
+            {
+                        "pOHeaderId": "300000074157551",
+                        "orderNumber": "163521",
+                        "procurementBUId": "300000046987012",
+                        "procurementBusinessUnit": "US1 Business Unit",
+                        "supplierId": "300000047414679",
+                        "supplier": "Dell Inc.",
+                        "soldToLegalEntity": "US1 Legal Entity"
+            }
+
+    4.  Click **OK**.
+7.  Click **Next**.
+8.  On the **Response** page, configure the following values:
+
+    1.  From the **Select the response payload format** list, select **JSON Sample**.
+
+    2.  Click the **<<<inline>>>** link.
+    3.  Enter the following JSON response sample:
+
+            {
+                        "id": 41,
+                        "creationDate": "2019-01-22T17:32:24+00:00",
+                        "lastUpdateDate": "2019-01-22T17:32:24.027+00:00",
+                        "createdBy": "john.doe@example.com",
+                        "lastUpdatedBy": "john.doe@example.com",
+                        "pOHeaderId": "300000074157551",
+                        "orderNumber": "163521",
+                        "procurementBUId": "300000046987012",
+                        "procurementBusinessUnit": "US1 Business Unit",
+                        "supplierId": "300000047414679",
+                        "supplier": "Dell Inc.",
+                        "soldToLegalEntity": "300000046973970", 
+                        "lOCId": null,
+                        "soldToLegalEntity": "300000046973970", "lOCId": null
+            }
+
+    4.  Click **OK**.
+9.  Click **Next**.
+
+    A summary of the properties you configured appears.
+
+10.  Review the summary and click **Done**.
+11.  Click **Save** to save the integration.
+
+### Define the Data Mapping
+
+A Map action named **Map to CreatePO** is automatically created. We'll define this data mapping.
+
+1.  Click the action **Map to CreatePO** and click ![Edit icon](img/edit.png).
+
+    The **Map to CreatePO** page appears.
+
+    In a couple of seconds, you should see a **Recommendations Available** popup appear
+
+2.  Click ![Recommend icon](img/recommendations.png) **Recommend**.
+
+    The recommended mapping appears:
+
+    ![](img/screenshots/ERP/recommended-mapping.png)
+3.  From the **Strength** list, select **Medium**.
+
+    ![](img/screenshots/ERP/recommendations-strength.png)
+4.  Click ![Apply Recommendations icon](img/check.png) **Apply Recommendations**.
+
+    A confirmation message appears informing you that the recommendations were applied.
+
+5.  Click **Validate**.
+
+    A confirmation message appears.
+
+6.  Click **Close**.
+7.  Click **Save** to save the integration.
+
+</section>
+
+* * *
+
+<section>
+
+## Define the Tracking Fields
+
+1.  In the **Integration** canvas, you should see an error icon ![Error icon](img/error.png) next to the **Last Saved** field.
+
+    The icon shows the number of errors you need to fix in your integration. You should have one error. To fix this error you need to add business tracking identifiers.
+
+2.  On the **Integration** canvas, click ![Actions icon](img/more-actions.png) , and then select **Tracking**.
+
+    ![Tracking selection](img/screenshots/ERP/tracking.png)
+
+    The **Business Identifiers for Tracking** dialog appears.
+
+3.  In the **Source search** field, enter `<span>ordernumber</span>` and click ![Search icon](img/search.png).
+4.  From the **Source** section, select **OrderNumber**, and then click ![Edit icon](img/right-arrow.png).
+
+    The **Order Number** field appears in the **Tracking Fields** table.
+
+    This defines how to identify your instances in the **Monitoring** console.
+
+5.  Click **Save**.
+
+    Notice there are no errors.
+
+6.  On the **Integration** canvas, click **Save**, and then click **Close**.
+
+</section>
+
+* * *
+
+<section>
+
+## Activate the Integration
+
+1.  On the **Integrations** page, locate your integration and hover over it.
+
+    <div data-bind="attr: {style: user_number() ? 'display:initial' : 'display:none'}">
+
+    The name of your integration is `ERP Cloud PO Event `.
+
+    </div>
+
+    <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+    [Enter your User Number to get your unique integration name.](#userNumber)
+
+    </div>
+
+    When you hover over the integration, a set of actions appear in the **Status** column.
+
+    ![](img/screenshots/integration/deactivated-status-icons.png)
+2.  Click ![Activate icon](img/activate.png).
+3.  Select **Enable Tracing**, and then select **Include Payload**.
+
+    Typically these options are disabled in production environments, but we'll enable them for the purpose of this lab.
+
+4.  Click **Activate**.
+
+    The activation will complete in a few seconds. If the activation succeeds, a confirmation message appears at the top of the page, and the status will change to <span style="color:#86BD66;">●</span> Active.
+
+</section>
+
+* * *
+
+<section>
+
+## Testing the Integration
+
+1.  Open a browser and sign in to **ERP Cloud** using the following information:
+
+    1.  **ERP Cloud URL**:
+
+        <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:initial' : 'display:none'}">
+
+        <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedAppEnvironment()? selectedAppEnvironment().url : '' }"><span></span></a>
+
+        <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedAppEnvironment()? selectedAppEnvironment().url : '' }"></a>
+
+        <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedAppEnvironment()? selectedAppEnvironment().url : '' }"></a></div>
+
+        <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:none' : 'display:initial'}">
+
+        [Select your ERP Cloud environment to get your ERP Cloud URL.](#erpEnvironment)
+
+        </div>
+
+    2.  **ERP Cloud User Name**:
+
+        <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:initial' : 'display:none'}">
+
+        `<span></span>`
+
+        </div>
+
+        <div data-bind="attr: {style: selectedAppEnvironment() ? 'display:none' : 'display:initial'}">
+
+        [Select your ERP Cloud environment to get your ERP Cloud Username.](#erpEnvironment)
+
+        </div>
+
+    3.  **ERP Cloud Password**: Your password will be provided by the instructor.
+2.  Select the **Procurement** tab.
+3.  Click **Purchase Orders**.
+4.  Click ![Add icon](img/erp-tasks.png).
+
+    ![](img/screenshots/ERP/erp-tasks-location.png)
+
+    The **Tasks** menu appears.
+
+5.  In the **Orders** section, click **Create Order**.
+
+    ![](img/screenshots/ERP/erp-create-order.png)
+
+    The **Create Order** dialog appears.
+
+6.  In the **Supplier** field, enter `<span>Dell Inc.</span>` and from the list that appears, select **Dell Inc.**.
+7.  Click **Create**.
+8.  On the **Edit Document (Purchase Order)** page, in the **Additional Information** section, click ![Add Row icon](img/add.png)
+
+    ![](img/screenshots/ERP/erp-add-row.png)
+
+    A new row appears in the **Lines** table.
+
+9.  Enter the following values for the columns in the new row:
+
+    1.  **Type**: select **Goods**.
+    2.  **Description**:
+
+        <div data-bind="attr: {style: user_number() ? 'display:initial' : 'display:none'}">Enter `<span>Lan Cable </span>`.</div>
+
+        <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+        [Enter your User Number to get your customized product description.](#userNumber)
+
+        </div>
+
+    3.  **Category Name**: click ![Search: Category Name icon](img/search.png), search for `<span>Computer Supplies</span>`, and then select it.
+    4.  **Quantity**: enter `<span>1</span>`.
+    5.  **UOM**: click ▼ and select `<span>Ea</span>` from the dialog that appears.
+    6.  **Base Price**: enter `<span>1.00</span>`.
+10.  Click **Submit** to create the purchase order.
+
+    A confirmation message with the purchase order number appears.
+
+11.  Copy the order number.
+
+### Verify the Order Was Created
+
+1.  Click ![Add icon](img/erp-tasks.png).
+
+    The **Tasks** menu appears.
+
+2.  In the **Orders** section, click **Manage Orders**.
+
+3.  In the **Order** field, enter the order number you wrote down.
+4.  Click **Search**.
+
+    Your order appears in the search results.
+
+5.  Verify that the order status is **Open**.
+
+    If the status isn't **Open**, wait a couple of minutes and run the search again until the status changes to change to **Open**.
+
+### Review your integration
+
+1.  Open **Oracle Integration**.
+2.  Click **Integrations** in the top level navigation pane to return to **Home**.
+
+    ![Home](img/screenshots/integration/integration-home-navigation.png)
+
+3.  From **Home**, click **Monitoring**, then **Integrations**, then **Tracking**.
+4.  Look for a completed integration with your **Order Number**.
+5.  Click your **Order Number** link to open the integration instance.
+
+    The flow is colored in green to indicate that it ran successfully.
+
+6.  Click ![Menu](img/menu.png) and select **View Activity Stream**.
+
+    ![Activity Stream](img/screenshots/integration/view-activitystream.png)
+
+7.  Review the flow and messages from your integration.
+8.  Click **Close** when done reviewing.
+
+### Run the Web Application
+
+1.  Open the following link to a Visual Builder Web App and verify your Purchase Order was created in the app:
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:initial' : 'display:none'}">
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment() ? selectedOICEnvironment().baseURL + '/ic/builder/design/PurchaseOrders/1.0/preview/webApps/locapp/' : '' }"><span></span></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment() ? selectedOICEnvironment().baseURL + '/ic/builder/design/PurchaseOrders/1.0/preview/webApps/locapp/' : '' }"></a>
+
+    <a class="allow-copy" target="_blank" data-bind="attr: { href: selectedOICEnvironment() ? selectedOICEnvironment().baseURL + '/ic/builder/design/PurchaseOrders/1.0/preview/webApps/locapp/' : '' }"></a></div>
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your OIC Environment to get your Visual Builder Web App URL.](#oicEnvironment)
+
+    </div>
+
+2.  If prompted, enter your user name and password.
+
+    <div data-bind="attr: {style: selectedOICEnvironment() &amp;&amp; user_number() ? 'display:initial' : 'display:none'}">
+
+    `<span></span>`
+
+    </div>
+
+    <div data-bind="attr: {style: selectedOICEnvironment() ? 'display:none' : 'display:initial'}">
+
+    [Select your OIC Environment to get your OIC Username.](#oicEnvironment)
+
+    </div>
+
+    <div data-bind="attr: {style: user_number() ? 'display:none' : 'display:initial'}">
+
+    [Enter your User Number to get your OIC Username.](#userNumber)
+
+    </div>
+
+    Your password will be provided by the instructor.
+3.  Click **PO List Page**.
+4.  Verify that your purchase order was created in the Visual Builder Web App.
+
+</section>
+
+* * *
+
+<section>
+
+## Congratulations!
+
+**Congratulations!** You have finished your integration and learned how to subscribe to ERO Cloud business events.
+
+</section>
+
+</article>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer-container ">
+
+<div>![Oracle](img/o.png)
+
+<footer class="footer-list">
+
+*   [About Oracle](https://www.oracle.com/corporate/index.html)
+*   [Contact Us](https://www.oracle.com/us/corporate/contact/index.html)
+*   [Legal Notices](https://www.oracle.com/us/legal/index.html)
+*   [Terms of Use](https://www.oracle.com/us/legal/terms/index.html)
+*   [Your Privacy Rights](https://www.oracle.com/us/legal/privacy/index.html)
+*   [#OOW19](https://twitter.com/hashtag/OOW19?src=hash)
+*   [Copyright © 2019-2020, Oracle and/or its affiliates. All rights reserved.](https://www.oracle.com/pls/topic/lookup?ctx=cpyr&id=en)
+
+</footer>
+
+</div>
+
+</div>
